@@ -5,6 +5,8 @@
 package engine
 
 import (
+	"fmt"
+
 	"github.com/drone/runner-go/environ"
 	"github.com/drone/runner-go/pipeline/runtime"
 )
@@ -59,6 +61,10 @@ type (
 		IsDir bool   `json:"is_dir,omitempty"`
 	}
 )
+
+func (f *File) String() string {
+	return fmt.Sprintf("%#v", f.Path)
+}
 
 //
 // implements the Spec interface
