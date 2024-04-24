@@ -59,12 +59,6 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 	}
 
 	spec := &engine.Spec{
-		Platform: engine.Platform{
-			OS:      pipeline.Platform.OS,
-			Arch:    pipeline.Platform.Arch,
-			Variant: pipeline.Platform.Variant,
-			Version: pipeline.Platform.Version,
-		},
 		Settings: engine.Settings{
 			Image: image,
 		},

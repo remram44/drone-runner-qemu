@@ -16,7 +16,6 @@ type (
 	// execution.
 	Spec struct {
 		Root     string   `json:"root,omitempty"`
-		Platform Platform `json:"platform,omitempty"`
 		Settings Settings `json:"settings,omitempty"`
 		Files    []*File  `json:"files,omitempty"`
 		Steps    []*Step  `json:"steps,omitempty"`
@@ -48,14 +47,6 @@ type (
 		Env  string `json:"env,omitempty"`
 		Data []byte `json:"data,omitempty"`
 		Mask bool   `json:"mask,omitempty"`
-	}
-
-	// Platform defines the target platform.
-	Platform struct {
-		OS      string `json:"os,omitempty"`
-		Arch    string `json:"arch,omitempty"`
-		Variant string `json:"variant,omitempty"`
-		Version string `json:"version,omitempty"`
 	}
 
 	// File defines a file that should be uploaded or
