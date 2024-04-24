@@ -31,8 +31,8 @@ func TestParse(t *testing.T) {
 			Data: "f0e4c2f76c58916ec25",
 		},
 		&Pipeline{
-			Kind:    "{{ Kind }}",
-			Type:    "{{ Type }}",
+			Kind:    "pipeline",
+			Type:    "qemu",
 			Name:    "default",
 			Version: "1",
 			Environment: map[string]string{
@@ -107,7 +107,7 @@ func TestParseLintNilStep(t *testing.T) {
 }
 
 func TestParseNoMatch(t *testing.T) {
-	r := &manifest.RawResource{Kind: "{{ Kind }}", Type: "exec"}
+	r := &manifest.RawResource{Kind: "pipeline", Type: "exec"}
 	_, match, _ := parse(r)
 	if match {
 		t.Errorf("Expect no match")
@@ -116,8 +116,8 @@ func TestParseNoMatch(t *testing.T) {
 
 func TestMatch(t *testing.T) {
 	r := &manifest.RawResource{
-		Kind: "{{ Kind }}",
-		Type: "{{ Type }}",
+		Kind: "pipeline",
+		Type: "qemu",
 	}
 	if match(r) == false {
 		t.Errorf("Expect match, got false")
@@ -125,14 +125,14 @@ func TestMatch(t *testing.T) {
 
 	r = &manifest.RawResource{
 		Kind: "approval",
-		Type: "{{ Type }}",
+		Type: "qemu",
 	}
 	if match(r) == true {
 		t.Errorf("Expect kind mismatch, got true")
 	}
 
 	r = &manifest.RawResource{
-		Kind: "{{ Kind }}",
+		Kind: "pipeline",
 		Type: "dummy",
 	}
 	if match(r) == true {

@@ -1,4 +1,4 @@
-drone-runner-{{ Type }}
-drone-runner-{{ Type }}.exe
+drone-runner-qemu
+drone-runner-qemu.exe
 release/*
 .env

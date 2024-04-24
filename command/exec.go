@@ -13,11 +13,11 @@ import (
 	"strings"
 	"time"
 
-	"{{ Module }}/command/internal"
-	"{{ Module }}/engine"
-	"{{ Module }}/engine/compiler"
-	"{{ Module }}/engine/linter"
-	"{{ Module }}/engine/resource"
+	"github.com/remram44/drone-runner-qemu/command/internal"
+	"github.com/remram44/drone-runner-qemu/engine"
+	"github.com/remram44/drone-runner-qemu/engine/compiler"
+	"github.com/remram44/drone-runner-qemu/engine/linter"
+	"github.com/remram44/drone-runner-qemu/engine/resource"
 
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/envsubst"

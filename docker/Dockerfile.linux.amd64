@@ -12,5 +12,5 @@ COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 LABEL com.centurylinklabs.watchtower.stop-signal="SIGINT"
 
-ADD release/linux/amd64/drone-runner-{{ Type }} /bin/
-ENTRYPOINT ["/bin/drone-runner-{{ Type }}"]
+ADD release/linux/amd64/drone-runner-qemu /bin/
+ENTRYPOINT ["/bin/drone-runner-qemu"]

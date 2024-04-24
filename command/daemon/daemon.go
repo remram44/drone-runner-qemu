@@ -8,11 +8,11 @@ import (
 	"context"
 	"time"
 
-	"{{ Module }}/engine"
-	"{{ Module }}/engine/compiler"
-	"{{ Module }}/engine/linter"
-	"{{ Module }}/engine/resource"
-	"{{ Module }}/internal/match"
+	"github.com/remram44/drone-runner-qemu/engine"
+	"github.com/remram44/drone-runner-qemu/engine/compiler"
+	"github.com/remram44/drone-runner-qemu/engine/linter"
+	"github.com/remram44/drone-runner-qemu/engine/resource"
+	"github.com/remram44/drone-runner-qemu/internal/match"
 
 	"github.com/drone/runner-go/client"
 	"github.com/drone/runner-go/environ/provider"
@@ -92,10 +92,10 @@ func (c *daemonCommand) run(*kingpin.ParseContext) error {
 		}
 		if err != nil {
 			logrus.WithError(err).
-				Errorln("cannot ping {{ Type }}")
+				Errorln("cannot ping qemu")
 			time.Sleep(time.Second)
 		} else {
-			logrus.Debugln("successfully pinged {{ Type }}")
+			logrus.Debugln("successfully pinged qemu")
 			break
 		}
 	}

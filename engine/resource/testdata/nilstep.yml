@@ -1,6 +1,6 @@
 ---
-kind: {{ Kind }}
-type: {{ Type }}
+kind: pipeline
+type: qemu
 name: test
 
 steps:

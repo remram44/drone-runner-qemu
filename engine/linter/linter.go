@@ -7,7 +7,7 @@ package linter
 import (
 	"errors"
 
-	"{{ Module }}/engine/resource"
+	"github.com/remram44/drone-runner-qemu/engine/resource"
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/runner-go/manifest"
 )

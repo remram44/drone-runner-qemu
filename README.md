@@ -1,6 +1,6 @@
 # Installation
 
-Download the {{ Type }} runner and configure to connect with your central Drone server using your server address and shared secret.
+Download the qemu runner and configure to connect with your central Drone server using your server address and shared secret.
 
 ```console
 $ docker run -d \
@@ -10,7 +10,7 @@ $ docker run -d \
   --env=DRONE_RPC_PROTO=https \
   --env=DRONE_RPC_SECRET=${SECRET} \
   --restart=always \
-  --name=drone-runner-{{Type}} {{Image}}
+  --name=drone-runner-qemu ghcr.io/remram44/drone-runner-qemu
 ```
 
 # License

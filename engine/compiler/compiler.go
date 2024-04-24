@@ -8,8 +8,8 @@ import (
 	"context"
 	"fmt"
 
-	"{{ Module }}/engine"
-	"{{ Module }}/engine/resource"
+	"github.com/remram44/drone-runner-qemu/engine"
+	"github.com/remram44/drone-runner-qemu/engine/resource"
 
 	"github.com/drone/runner-go/clone"
 	"github.com/drone/runner-go/environ"

@@ -5,7 +5,7 @@
 package main
 
 import (
-	"{{ Module }}/command"
+	"github.com/remram44/drone-runner-qemu/command"
 	_ "github.com/joho/godotenv/autoload"
 )
 

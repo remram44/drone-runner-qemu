@@ -1,4 +1,4 @@
-module {{ Module }}
+module github.com/remram44/drone-runner-qemu
 
 go 1.12
 

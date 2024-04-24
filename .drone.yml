@@ -1,4 +1,4 @@
-kind: {{ Kind }}
+kind: pipeline
 type: docker
 name: linux
 
@@ -17,7 +17,7 @@ steps:
   image: plugins/docker
   pull: if-not-exists
   settings:
-    repo: {{ Image }}
+    repo: ghcr.io/remram44/drone-runner-qemu
     auto_tag: true
     dockerfile: docker/Dockerfile.linux.amd64
     username:

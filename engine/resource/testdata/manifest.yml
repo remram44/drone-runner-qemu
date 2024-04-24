@@ -9,8 +9,8 @@ name: token
 data: f0e4c2f76c58916ec25
 
 ---
-kind: {{ Kind }}
-type: {{ Type }}
+kind: pipeline
+type: qemu
 name: default
 version: 1
 

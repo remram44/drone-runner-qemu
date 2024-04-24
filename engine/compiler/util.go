@@ -7,8 +7,8 @@ package compiler
 import (
 	"strings"
 
-	"{{ Module }}/engine"
-	"{{ Module }}/engine/resource"
+	"github.com/remram44/drone-runner-qemu/engine"
+	"github.com/remram44/drone-runner-qemu/engine/resource"
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/runner-go/manifest"
 )

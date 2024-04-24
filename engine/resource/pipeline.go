@@ -15,8 +15,8 @@ var (
 
 // Defines the Resource Kind and Type.
 const (
-	Kind = "{{ Kind }}"
-	Type = "{{ Type }}"
+	Kind = "pipeline"
+	Type = "qemu"
 )
 
 // Pipeline is a pipeline resource that executes pipelines
