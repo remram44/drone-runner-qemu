@@ -51,15 +51,6 @@ type Config struct {
 		Labels     map[string]string `envconfig:"DRONE_RUNNER_LABELS"`
 	}
 
-	Platform struct {
-		// TODO set default os and architectures if the runner
-		// is os or architecture-specific, otherwise remove.
-		OS      string `envconfig:"DRONE_PLATFORM_OS"`
-		Arch    string `envconfig:"DRONE_PLATFORM_ARCH"`
-		Kernel  string `envconfig:"DRONE_PLATFORM_KERNEL"`
-		Variant string `envconfig:"DRONE_PLATFORM_VARIANT"`
-	}
-
 	Limit struct {
 		Repos   []string `envconfig:"DRONE_LIMIT_REPOS"`
 		Events  []string `envconfig:"DRONE_LIMIT_EVENTS"`
@@ -67,9 +58,8 @@ type Config struct {
 	}
 
 	Settings struct {
-		// TODO replace or remove custom settings
-		Param1 string `envconfig:"DRONE_PARAM1"`
-		Param2 string `envconfig:"DRONE_PARAM2"`
+		ImageDir	 string `envconfig:"DRONE_QEMU_IMAGE_DIR"`
+		DefaultImage string `envconfig:"DRONE_QEMU_DEFAULT_IMAGE"`
 	}
 
 	Environ struct {

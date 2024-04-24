@@ -29,9 +29,7 @@ var random = func() string {
 
 // Settings defines default settings.
 type Settings struct {
-	// TODO replace or remove
-	Param1 string
-	Param2 string
+	DefaultImage string
 }
 
 // Compiler compiles the Yaml configuration file to an
@@ -55,6 +53,11 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 	pipeline := args.Pipeline.(*resource.Pipeline)
 	os := pipeline.Platform.OS
 
+	image := c.Settings.DefaultImage
+	if pipeline.Image != "" {
+		image = pipeline.Image
+	}
+
 	spec := &engine.Spec{
 		Platform: engine.Platform{
 			OS:      pipeline.Platform.OS,
@@ -63,9 +66,7 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 			Version: pipeline.Platform.Version,
 		},
 		Settings: engine.Settings{
-			// TODO replace or remove
-			Param1: c.Settings.Param1,
-			Param2: c.Settings.Param2,
+			Image: image,
 		},
 	}
 

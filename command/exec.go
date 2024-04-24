@@ -39,17 +39,18 @@ import (
 type execCommand struct {
 	*internal.Flags
 
-	Source     *os.File
-	Include    []string
-	Exclude    []string
-	Environ    map[string]string
-	Secrets    map[string]string
-	Settings   compiler.Settings
-	Pretty     bool
-	Procs      int64
-	Debug      bool
-	Trace      bool
-	Dump       bool
+	Source       *os.File
+	Include      []string
+	Exclude      []string
+	Environ      map[string]string
+	Secrets      map[string]string
+	Settings     compiler.Settings
+	Pretty       bool
+	Procs        int64
+	Debug        bool
+	Trace        bool
+	Dump         bool
+	ImageDir     string
 }
 
 func (c *execCommand) run(*kingpin.ParseContext) error {
@@ -207,7 +208,9 @@ func (c *execCommand) run(*kingpin.ParseContext) error {
 		),
 	)
 
-	engine, err := engine.New(engine.Opts{})
+	engine, err := engine.New(engine.Opts{
+		ImageDir: c.ImageDir,
+	})
 	if err != nil {
 		return err
 	}
@@ -280,15 +283,11 @@ func registerExec(app *kingpin.Application) {
 			),
 		).BoolVar(&c.Pretty)
 
-	//
-	// TODO replace or remove custom settings
-	//
- 
-	cmd.Flag("param1", "custom parameter 1").
-		StringVar(&c.Settings.Param1)
+	cmd.Flag("image-dir", "location of image files").
+		StringVar(&c.ImageDir)
 
-	cmd.Flag("param2", "custom parameter 2").
-		StringVar(&c.Settings.Param2)
+	cmd.Flag("default-image", "default image name").
+		StringVar(&c.Settings.DefaultImage)
 
 	// shared pipeline flags
 	c.Flags = internal.ParseFlags(cmd)

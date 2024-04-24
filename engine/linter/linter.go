@@ -41,14 +41,6 @@ func checkSteps(pipeline *resource.Pipeline, trusted bool) error {
 		if step == nil {
 			return errors.New("Linter: nil step")
 		}
-		if err := checkStep(step, trusted); err != nil {
-			return err
-		}
 	}
-	return nil
-}
-
-func checkStep(step *resource.Step, trusted bool) error {
-	// TODO optionally add per-step pipeline rules or remove
 	return nil
 }

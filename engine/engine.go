@@ -13,24 +13,18 @@ import (
 
 // Opts configures the Engine.
 type Opts struct {
-	// TODO replace or remove
-	Param1 string
-	Param2 string
+	ImageDir string
 }
 
 // Engine implements a pipeline engine.
 type Engine struct {
-	// TODO replace or remove
-	Param1 string
-	Param2 string
+	ImageDir string
 }
 
 // New returns a new engine.
 func New(opts Opts) (*Engine, error) {
 	return &Engine{
-		// TODO replace or remove
-		Param1: opts.Param1,
-		Param2: opts.Param2,
+		ImageDir: opts.ImageDir,
 	}, nil
 }
 
@@ -73,10 +67,5 @@ func (e *Engine) Run(ctx context.Context, specv runtime.Spec, stepv runtime.Step
 
 // Ping pings the underlying runtime to verify connectivity.
 func (e *Engine) Ping(ctx context.Context) error {
-	// TODO optionally add code to ping the underlying
-	// service to verify credentials or connectivity. For
-	// example, the kubernetes runner might ping kubernetes
-	// to ensure the client can connect and is authorized
-	// to make requests.
 	return nil
 }

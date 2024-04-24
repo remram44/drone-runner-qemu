@@ -79,7 +79,9 @@ func (c *daemonCommand) run(*kingpin.ParseContext) error {
 		),
 	)
 
-	opts := engine.Opts{}
+	opts := engine.Opts{
+		ImageDir: config.Settings.ImageDir,
+	}
 	engine, err := engine.New(opts)
 	if err != nil {
 		logrus.WithError(err).
@@ -118,9 +120,7 @@ func (c *daemonCommand) run(*kingpin.ParseContext) error {
 		),
 		Compiler: &compiler.Compiler{
 			Settings: compiler.Settings{
-				// TODO replace or remove
-				Param1: config.Settings.Param1,
-				Param2: config.Settings.Param2,
+				DefaultImage: config.Settings.DefaultImage,
 			},
 			Environ: provider.Combine(
 				provider.Static(config.Runner.Environ),
@@ -155,10 +155,6 @@ func (c *daemonCommand) run(*kingpin.ParseContext) error {
 		Filter: &client.Filter{
 			Kind:    resource.Kind,
 			Type:    resource.Type,
-			OS:      config.Platform.OS,
-			Arch:    config.Platform.Arch,
-			Variant: config.Platform.Variant,
-			Kernel:  config.Platform.Kernel,
 			Labels:  config.Runner.Labels,
 		},
 	}
@@ -207,8 +203,6 @@ func (c *daemonCommand) run(*kingpin.ParseContext) error {
 			WithField("endpoint", config.Client.Address).
 			WithField("kind", resource.Kind).
 			WithField("type", resource.Type).
-			WithField("os", config.Platform.OS).
-			WithField("arch", config.Platform.Arch).
 			Infoln("polling the remote server")
 
 		poller.Poll(ctx, config.Runner.Capacity)

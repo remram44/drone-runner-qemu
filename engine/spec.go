@@ -24,9 +24,7 @@ type (
 
 	// Settings provides pipeline settings.
 	Settings struct {
-		// TODO remove or replace
-		Param1 string `json:"param1,omitempty`
-		Param2 string `json:"param2,omitempty`
+		Image string `json:"image,omitempty"`
 	}
 
 	// Step defines a pipeline step.
