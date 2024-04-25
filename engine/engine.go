@@ -142,7 +142,7 @@ func writeTemp(dir string, pattern string, data []byte) (string, error) {
 	return file.Name(), nil
 }
 
-func (e *Engine) scpUploadOutput(ctx context.Context, data []byte, to string, output io.Writer) error {
+func (e *Engine) scpUpload(ctx context.Context, data []byte, to string) error {
 	tempFile, err := writeTemp(e.TempDir, "drone-qemu-upload-*", data)
 	if err != nil {
 		return fmt.Errorf("couldn't create temporary file to upload: %w", err)
@@ -160,8 +160,7 @@ func (e *Engine) scpUploadOutput(ctx context.Context, data []byte, to string, ou
 		tempFile,
 		fmt.Sprintf("%s@localhost:%s", e.username, to),
 	)
-	cmd.Stdout = output
-	cmd.Stderr = output
+	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
 
@@ -310,7 +309,7 @@ func (e *Engine) Run(ctx context.Context, specv runtime.Spec, stepv runtime.Step
 		}
 
 		// Upload
-		err := e.scpUploadOutput(ctx, file.Data, file.Path, output)
+		err := e.scpUpload(ctx, file.Data, file.Path)
 		if err != nil {
 			return nil, fmt.Errorf("sftp failed: %w", err)
 		}
