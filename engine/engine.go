@@ -95,6 +95,7 @@ func (e *Engine) ssh(ctx context.Context, command string) error {
 		"ssh",
 		"-o", "StrictHostKeyChecking=no",
 		"-o", "UserKnownHostsFile=/dev/null",
+		"-o", "LogLevel=ERROR",
 		"-i", "id_rsa",
 		"-p", strconv.Itoa(e.SshPort),
 		"ubuntu@localhost", // TODO username
@@ -111,6 +112,7 @@ func (e *Engine) sshOutput(ctx context.Context, command string, output io.Writer
 		"ssh",
 		"-o", "StrictHostKeyChecking=no",
 		"-o", "UserKnownHostsFile=/dev/null",
+		"-o", "LogLevel=ERROR",
 		"-i", "id_rsa",
 		"-p", strconv.Itoa(e.SshPort),
 		"ubuntu@localhost", // TODO username
@@ -143,6 +145,7 @@ func (e *Engine) scpUploadOutput(ctx context.Context, data []byte, to string, ou
 		"scp",
 		"-o", "StrictHostKeyChecking=no",
 		"-o", "UserKnownHostsFile=/dev/null",
+		"-o", "LogLevel=ERROR",
 		"-i", "id_rsa",
 		"-P", strconv.Itoa(e.SshPort),
 		tempFile,
