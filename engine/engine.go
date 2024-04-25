@@ -67,6 +67,7 @@ func getStepCommand(command string, args []string, envs map[string]string, worki
 // Opts configures the Engine.
 type Opts struct {
 	ImageDir string
+	TempDir  string
 }
 
 // Engine implements a pipeline engine.
@@ -80,9 +81,14 @@ type Engine struct {
 
 // New returns a new engine.
 func New(opts Opts) (*Engine, error) {
+	tempDir := opts.TempDir
+	if tempDir == "" {
+		tempDir = os.TempDir()
+	}
+
 	return &Engine{
 		ImageDir: opts.ImageDir,
-		TempDir: "/tmp", // TODO config
+		TempDir: tempDir,
 	}, nil
 }
 

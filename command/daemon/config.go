@@ -59,6 +59,7 @@ type Config struct {
 
 	Settings struct {
 		ImageDir	 string `envconfig:"DRONE_QEMU_IMAGE_DIR"`
+		TempDir		 string `envconfig:"DRONE_QEMU_TEMP_DIR"`
 		DefaultImage string `envconfig:"DRONE_QEMU_DEFAULT_IMAGE"`
 	}
 

@@ -81,6 +81,7 @@ func (c *daemonCommand) run(*kingpin.ParseContext) error {
 
 	opts := engine.Opts{
 		ImageDir: config.Settings.ImageDir,
+		TempDir: config.Settings.TempDir,
 	}
 	engine, err := engine.New(opts)
 	if err != nil {

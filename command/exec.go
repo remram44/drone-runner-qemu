@@ -51,6 +51,7 @@ type execCommand struct {
 	Trace        bool
 	Dump         bool
 	ImageDir     string
+	TempDir		 string
 }
 
 func (c *execCommand) run(*kingpin.ParseContext) error {
@@ -210,6 +211,7 @@ func (c *execCommand) run(*kingpin.ParseContext) error {
 
 	engine, err := engine.New(engine.Opts{
 		ImageDir: c.ImageDir,
+		TempDir: c.TempDir,
 	})
 	if err != nil {
 		return err
@@ -285,6 +287,9 @@ func registerExec(app *kingpin.Application) {
 
 	cmd.Flag("image-dir", "location of image files").
 		StringVar(&c.ImageDir)
+
+	cmd.Flag("temp-dir", "temporary directory where files and images will be created").
+		StringVar(&c.TempDir)
 
 	cmd.Flag("default-image", "default image name").
 		StringVar(&c.Settings.DefaultImage)
