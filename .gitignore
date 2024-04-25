@@ -18,3 +18,5 @@ desktop.ini
 *.tar.gz
 *.tar.bz2
 *.zip
+
+qemu-images/*.img
