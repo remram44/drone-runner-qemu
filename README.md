@@ -44,6 +44,24 @@ $ docker run -d \
 
 That's it. Go make some pipelines with `type: qemu`, they will be run by this system in their own, self-contained, ephemeral virtual machines.
 
+# Usage
+
+Use `type: qemu` in your `.drone.yml`. You can set the top-level `image` key to the name of an image file. For example:
+
+```yaml
+---
+kind: pipeline
+type: qemu
+name: default
+
+image: ubuntu-22.04
+
+steps:
+- name: greeting
+  commands:
+  - echo hello world
+```
+
 # License
 
 This software is licensed under the [Blue Oak Model License 1.0.0](https://spdx.org/licenses/BlueOak-1.0.0.html).
