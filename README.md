@@ -19,6 +19,17 @@ You can customize how images are run by editing the `.qemu.sh` scripts or making
 Download the qemu runner and configure to connect with your central Drone server using your server address and shared secret:
 
 ```console
+$ DRONE_RPC_HOST=drone.example.com \
+  DRONE_RPC_PROTO=https \
+  DRONE_RPC_SECRET=${SECRET} \
+  DRONE_QEMU_IMAGE_DIR=$(pwd)/qemu-images \
+  DRONE_QEMU_DEFAULT_IMAGE=ubuntu-22.04 \
+  ./drone-runner-qemu
+```
+
+Or with Docker:
+
+```console
 $ docker run -d \
   --device /dev/kvm \
   --env=DRONE_RPC_HOST=drone.example.com \
