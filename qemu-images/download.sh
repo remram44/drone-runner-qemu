@@ -4,7 +4,6 @@ set -eux
 
 cd "$(dirname "$0")"
 
-if ! [ -e ubuntu-22.04.img ]; then
-    curl -SLo "ubuntu-22.04.img.xz" https://cdimage.ubuntu.com/ubuntu-server/jammy/daily-preinstalled/current/jammy-preinstalled-server-amd64.img.xz
-    unxz "ubuntu-22.04.img.xz"
+if ! [ -e "ubuntu-22.04.qcow2" ]; then
+    curl -SLo "ubuntu-22.04.qcow2" https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 fi

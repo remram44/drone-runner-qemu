@@ -20,5 +20,6 @@ desktop.ini
 *.zip
 
 qemu-images/*.img
+qemu-images/*.qcow2
 cloud-init.iso
 id_rsa
