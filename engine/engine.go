@@ -74,6 +74,7 @@ type Opts struct {
 type Engine struct {
 	ImageDir    string
 	TempDir     string
+	username    string
 	Image       string
 	SshPort     int
 	QemuProcess *os.Process
@@ -104,7 +105,7 @@ func (e *Engine) ssh(ctx context.Context, command string) error {
 		"-o", "LogLevel=ERROR",
 		"-i", "id_rsa",
 		"-p", strconv.Itoa(e.SshPort),
-		"ubuntu@localhost", // TODO username
+		fmt.Sprintf("%s@localhost", e.username),
 		command,
 	).Run()
 }
@@ -121,7 +122,7 @@ func (e *Engine) sshOutput(ctx context.Context, command string, output io.Writer
 		"-o", "LogLevel=ERROR",
 		"-i", "id_rsa",
 		"-p", strconv.Itoa(e.SshPort),
-		"ubuntu@localhost", // TODO username
+		fmt.Sprintf("%s@localhost", e.username),
 		command,
 	)
 	cmd.Stdout = output
@@ -155,7 +156,7 @@ func (e *Engine) scpUploadOutput(ctx context.Context, data []byte, to string, ou
 		"-i", "id_rsa",
 		"-P", strconv.Itoa(e.SshPort),
 		tempFile,
-		fmt.Sprintf("ubuntu@localhost:%s", to), // TODO username
+		fmt.Sprintf("%s@localhost:%s", e.username, to),
 	)
 	cmd.Stdout = output
 	cmd.Stderr = output
@@ -184,6 +185,20 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		"imageFormat": baseImageFormat,
 	}).Info("base image selected")
 
+	// Load configuration
+	e.username = "root"
+	usernameBytes, err := os.ReadFile(baseImage + ".username")
+	if err != nil {
+		if err.(*os.PathError) == nil {
+			return fmt.Errorf("error opening %s: %w", baseImage + ".username", err)
+		}
+	} else {
+		e.username = strings.TrimSpace(string(usernameBytes))
+	}
+	logrus.WithFields(logrus.Fields{
+		"username": e.username,
+	}).Info("username selected")
+
 	// Pick random port
 	e.SshPort = rand.Intn(65536 - 1025) + 1025
 
@@ -194,7 +209,7 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	logrus.WithFields(logrus.Fields{
 		"image": e.Image,
 	}).Info("creating image")
-	err := exec.CommandContext(
+	err = exec.CommandContext(
 		ctx,
 		"qemu-img", "create",
 		"-f", "qcow2",
