@@ -130,7 +130,7 @@ type Engine struct {
 	Image               string
 	SshPort             int
 	QemuProcess         *os.Process
-	QemuProcessExitChan chan error
+	QemuProcessExitChan chan struct{}
 }
 
 // New returns a new engine.
@@ -290,9 +290,10 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		return fmt.Errorf("qemu process failed to start: %w", err)
 	}
 	e.QemuProcess = cmd.Process
-	e.QemuProcessExitChan = make(chan error)
+	e.QemuProcessExitChan = make(chan struct{})
 	go func() {
-		e.QemuProcessExitChan <- cmd.Wait()
+		cmd.Process.Wait()
+		close(e.QemuProcessExitChan)
 	}()
 
 	// Try to connect via SSH until it succeeds
@@ -300,7 +301,14 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	start := time.Now()
 	go func() {
 		for time.Since(start) <= BOOT_MAX_DELAY {
-			time.Sleep(5 * time.Second)
+			// Wait for Qemu to exit or 5 seconds
+			select {
+			case _, running := <- e.QemuProcessExitChan:
+				if !running {
+					return
+				}
+			case _ = <- time.After(5 * time.Second):
+			}
 
 			err := e.ssh(ctx, "true")
 			if err == nil {
@@ -313,8 +321,8 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	}()
 
 	select {
-	case err = <-e.QemuProcessExitChan:
-		return fmt.Errorf("qemu process died: %w", err)
+	case <-e.QemuProcessExitChan:
+		return fmt.Errorf("qemu process died")
 	case booted := <- bootChannel:
 		if booted {
 			logrus.WithFields(logrus.Fields{
