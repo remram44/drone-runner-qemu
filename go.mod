@@ -25,6 +25,7 @@ require (
 	github.com/99designs/httpsignatures-go v0.0.0-20170731043157-88528bf4ca7e // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
+	github.com/alessio/shellescape v1.4.2 // indirect
 	github.com/bmatcuk/doublestar v1.1.1 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
