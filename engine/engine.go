@@ -74,7 +74,9 @@ type Opts struct {
 
 // Machine configuration, loaded from JSON
 type MachineConfig struct {
-	Username string `json:"username,omitempty"`
+	Username        string `json:"username,omitempty"`
+	BaseImage       string `json:"base_image,omitempty"`
+	BaseImageFormat string `json:"base_image_format,omitempty"`
 }
 
 func loadMachineConfig(filename string) (MachineConfig, error) {
@@ -92,6 +94,18 @@ func loadMachineConfig(filename string) (MachineConfig, error) {
 
 	if result.Username == "" {
 		result.Username = "root"
+	}
+
+	if result.BaseImage == "" {
+		result.BaseImage = filename[:len(filename)-10] + ".img"
+	}
+
+	if result.BaseImageFormat == "" {
+		if strings.HasSuffix(result.BaseImage, ".qcow2") {
+			result.BaseImageFormat = "qcow2"
+		} else {
+			result.BaseImageFormat = "raw"
+		}
 	}
 
 	return result, nil
@@ -218,27 +232,9 @@ func (e *Engine) uploadFiles(ctx context.Context, files []*File) error {
 func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	spec := specv.(*Spec)
 
-	// Find the base image file
-	baseImageImg := path.Join(e.ImageDir, fmt.Sprintf("%s.img", spec.Settings.Image))
-	baseImageQcow2 := path.Join(e.ImageDir, fmt.Sprintf("%s.qcow2", spec.Settings.Image))
-	var baseImage, baseImageFormat string
-	if _, e := os.Stat(baseImageQcow2); e == nil {
-		baseImage = baseImageQcow2
-		baseImageFormat = "qcow2"
-	} else if _, e := os.Stat(baseImageImg); e == nil {
-		baseImage = baseImageImg
-		baseImageFormat = "raw"
-	} else {
-		return errors.New("No such image file")
-	}
-	logrus.WithFields(logrus.Fields{
-		"image": baseImage,
-		"imageFormat": baseImageFormat,
-	}).Info("base image selected")
-
 	// Load configuration
 	var err error
-	e.MachineConfig, err = loadMachineConfig(baseImage + ".json")
+	e.MachineConfig, err = loadMachineConfig(path.Join(e.ImageDir, spec.Settings.Image + ".qemu.json"))
 	if err != nil {
 		return fmt.Errorf("error loading machine config JSON: %w", err)
 	}
@@ -257,8 +253,8 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		ctx,
 		"qemu-img", "create",
 		"-f", "qcow2",
-		"-b", baseImage,
-		"-F", baseImageFormat,
+		"-b", e.MachineConfig.BaseImage,
+		"-F", e.MachineConfig.BaseImageFormat,
 		e.Image,
 	).Run()
 	if err != nil {
@@ -269,28 +265,17 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	logrus.Info("starting qemu-system-x86_64")
 	cmd := exec.CommandContext(
 		ctx,
-		// TODO config
-		"qemu-system-x86_64", "-enable-kvm",
-		"-cpu", "host",
-		"-no-reboot",
-		"-drive", fmt.Sprintf("id=root,file=%s,format=qcow2", e.Image),
-		"-drive", "id=cidata,file=cloud-init.iso,media=cdrom",
-		"-netdev", fmt.Sprintf("user,id=net0,hostfwd=tcp:127.0.0.1:%d-:22", e.SshPort),
-		"-device", "virtio-net-pci,netdev=net0",
-		"-device", "virtio-serial-pci",
-		"-nographic",
-		"-vga", "none",
-		"-display", "none",
-		"-m", "1024",
-		"-smp", "2",
+		path.Join(e.ImageDir, spec.Settings.Image + ".qemu.sh"),
 	)
+	cmd.Env = append(cmd.Env, "QEMU_IMAGE=" + e.Image)
+	cmd.Env = append(cmd.Env, "QEMU_SSH_PORT=" + strconv.Itoa(e.SshPort))
 	//cmd.Stdout = os.Stdout // DEBUG
 	//cmd.Stderr = os.Stderr // DEBUG
 	err = cmd.Start()
 	if err != nil {
 		os.Remove(e.Image)
 		e.Image = ""
-		return fmt.Errorf("qemu-system-x86_64 failed to start: %w", err)
+		return fmt.Errorf("qemu process failed to start: %w", err)
 	}
 	e.QemuProcess = cmd.Process
 
