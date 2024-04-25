@@ -20,3 +20,5 @@ desktop.ini
 *.zip
 
 qemu-images/*.img
+cloud-init.iso
+id_rsa
