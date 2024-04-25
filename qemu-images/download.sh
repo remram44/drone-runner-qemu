@@ -23,3 +23,7 @@ fi
 if ! [ -e "fedora-40.qcow2" ]; then
     curl -SLo "fedora-40.qcow2" https://download.fedoraproject.org/pub/fedora/linux/releases/40/Cloud/x86_64/images/Fedora-Cloud-Base-Generic.x86_64-40-1.14.qcow2
 fi
+
+if ! [ -e "alpine-3.19.qcow2" ]; then
+    curl -SLo "alpine-3.19.qcow2" https://dl-cdn.alpinelinux.org/alpine/v3.19/releases/cloud/nocloud_alpine-3.19.1-x86_64-bios-cloudinit-r0.qcow2
+fi
