@@ -81,7 +81,9 @@ type MachineConfig struct {
 	BaseImageFormat string `json:"base_image_format,omitempty"`
 }
 
-func loadMachineConfig(filename string) (MachineConfig, error) {
+func loadMachineConfig(imageDir string, name string) (MachineConfig, error) {
+	filename := path.Join(imageDir, name + ".qemu.json")
+
 	var result MachineConfig
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -99,7 +101,14 @@ func loadMachineConfig(filename string) (MachineConfig, error) {
 	}
 
 	if result.BaseImage == "" {
-		result.BaseImage = filename[:len(filename)-10] + ".img"
+		imgImage := filename[:len(filename)-10] + ".img"
+		qcow2Image := filename[:len(filename)-10] + ".qcow2"
+
+		if _, err := os.Stat(qcow2Image); err == nil {
+			result.BaseImage = qcow2Image
+		} else {
+			result.BaseImage = imgImage
+		}
 	}
 
 	if result.BaseImageFormat == "" {
@@ -237,7 +246,7 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 
 	// Load configuration
 	var err error
-	e.MachineConfig, err = loadMachineConfig(path.Join(e.ImageDir, spec.Settings.Image + ".qemu.json"))
+	e.MachineConfig, err = loadMachineConfig(e.ImageDir, spec.Settings.Image)
 	if err != nil {
 		return fmt.Errorf("error loading machine config JSON: %w", err)
 	}
