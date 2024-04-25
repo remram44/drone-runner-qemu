@@ -8,11 +8,7 @@ COPY command command
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build -tags netgo -ldflags -w -o drone-runner-qemu-$TARGETARCH
 
 
-FROM alpine AS certs
-RUN apk add -U --no-cache ca-certificates
-
-
-FROM alpine
+FROM debian:bookworm
 
 ARG TARGETARCH
 
@@ -20,7 +16,10 @@ ENV GODEBUG netdns=go
 ENV DRONE_PLATFORM_OS linux
 ENV DRONE_PLATFORM_ARCH $TARGETARCH
 
-COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+RUN apt-get update && \
+    apt-get install -yy --no-install-recommends ca-certificates openssh-client qemu-utils qemu-system-x86 qemu-system-arm && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 LABEL com.centurylinklabs.watchtower.stop-signal="SIGINT"
 
