@@ -26,6 +26,8 @@ import (
 	"github.com/alessio/shellescape"
 )
 
+const BOOT_MAX_DELAY time.Duration = 3 * time.Minute
+
 func getMakeDirectoriesCommand(files []*File) string {
 	var command []string
 	for _, file := range files {
@@ -113,12 +115,13 @@ func loadMachineConfig(filename string) (MachineConfig, error) {
 
 // Engine implements a pipeline engine.
 type Engine struct {
-	ImageDir      string
-	TempDir       string
-	MachineConfig MachineConfig
-	Image         string
-	SshPort       int
-	QemuProcess   *os.Process
+	ImageDir            string
+	TempDir             string
+	MachineConfig       MachineConfig
+	Image               string
+	SshPort             int
+	QemuProcess         *os.Process
+	QemuProcessExitChan chan error
 }
 
 // New returns a new engine.
@@ -278,25 +281,39 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		return fmt.Errorf("qemu process failed to start: %w", err)
 	}
 	e.QemuProcess = cmd.Process
+	e.QemuProcessExitChan = make(chan error)
+	go func() {
+		e.QemuProcessExitChan <- cmd.Wait()
+	}()
 
-	// Wait for SSH connection to succeed
+	// Try to connect via SSH until it succeeds
+	bootChannel := make(chan bool)
 	start := time.Now()
-	booted := false
-	for time.Since(start) <= 3 * time.Minute {
-		time.Sleep(5 * time.Second)
+	go func() {
+		for time.Since(start) <= BOOT_MAX_DELAY {
+			time.Sleep(5 * time.Second)
 
-		if err := e.ssh(ctx, "true"); err == nil {
-			booted = true
-			break
+			if err := e.ssh(ctx, "true"); err == nil {
+				bootChannel <- true
+				return
+			}
+			logrus.Infof("connection failing: %v", err)
 		}
-		logrus.Infof("connection failing: %v", err)
+		bootChannel <- false
+	}()
+
+	select {
+	case err = <-e.QemuProcessExitChan:
+		return fmt.Errorf("qemu process died: %w", err)
+	case booted := <- bootChannel:
+		if booted {
+			logrus.WithFields(logrus.Fields{
+				"duration": time.Since(start),
+			}).Info("machine has started")
+		} else {
+			return errors.New("machine did not come online")
+		}
 	}
-	if !booted {
-		return errors.New("machine did not come online")
-	}
-	logrus.WithFields(logrus.Fields{
-		"duration": time.Since(start),
-	}).Info("machine has started")
 
 	// Upload files
 	err = e.uploadFiles(ctx, spec.Files)
