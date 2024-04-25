@@ -274,7 +274,7 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	}
 
 	// Start Qemu
-	logrus.Info("starting qemu-system-x86_64")
+	logrus.Info("starting qemu")
 	cmd := exec.CommandContext(
 		ctx,
 		path.Join(e.ImageDir, spec.Settings.Image + ".qemu.sh"),
@@ -302,7 +302,8 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		for time.Since(start) <= BOOT_MAX_DELAY {
 			time.Sleep(5 * time.Second)
 
-			if err := e.ssh(ctx, "true"); err == nil {
+			err := e.ssh(ctx, "true")
+			if err == nil {
 				bootChannel <- true
 				return
 			}
