@@ -20,7 +20,7 @@ Download the qemu runner and configure to connect with your central Drone server
 
 ```console
 $ docker run -d \
-  --publish=3000:3000 \
+  --device /dev/kvm \
   --env=DRONE_RPC_HOST=drone.example.com \
   --env=DRONE_RPC_PROTO=https \
   --env=DRONE_RPC_SECRET=${SECRET} \
