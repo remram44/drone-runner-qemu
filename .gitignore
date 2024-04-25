@@ -2,3 +2,19 @@ drone-runner-qemu
 drone-runner-qemu.exe
 release/*
 .env
+
+# Vim
+.*.swp
+
+# Emacs
+\#*#
+
+# OS files
+.DS_Store
+desktop.ini
+
+# Archives
+*.tar
+*.tar.gz
+*.tar.bz2
+*.zip
