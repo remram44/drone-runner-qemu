@@ -7,8 +7,9 @@ package engine
 import (
 	"context"
 	"errors"
-	"io"
 	"fmt"
+	"io"
+	"encoding/json"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -70,14 +71,39 @@ type Opts struct {
 	TempDir  string
 }
 
+// Machine configuration, loaded from JSON
+type MachineConfig struct {
+	Username string `json:"username,omitempty"`
+}
+
+func loadMachineConfig(filename string) (MachineConfig, error) {
+	var result MachineConfig
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		if err.(*os.PathError) != nil {
+			return result, err
+		}
+	}
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		return result, err
+	}
+
+	if result.Username == "" {
+		result.Username = "root"
+	}
+
+	return result, nil
+}
+
 // Engine implements a pipeline engine.
 type Engine struct {
-	ImageDir    string
-	TempDir     string
-	username    string
-	Image       string
-	SshPort     int
-	QemuProcess *os.Process
+	ImageDir      string
+	TempDir       string
+	MachineConfig MachineConfig
+	Image         string
+	SshPort       int
+	QemuProcess   *os.Process
 }
 
 // New returns a new engine.
@@ -106,7 +132,7 @@ func (e *Engine) ssh(ctx context.Context, command string) error {
 		"-o", "ConnectTimeout=2",
 		"-i", "id_rsa",
 		"-p", strconv.Itoa(e.SshPort),
-		fmt.Sprintf("%s@localhost", e.username),
+		fmt.Sprintf("%s@localhost", e.MachineConfig.Username),
 		command,
 	).Run()
 }
@@ -124,7 +150,7 @@ func (e *Engine) sshOutput(ctx context.Context, command string, output io.Writer
 		"-o", "ConnectTimeout=2",
 		"-i", "id_rsa",
 		"-p", strconv.Itoa(e.SshPort),
-		fmt.Sprintf("%s@localhost", e.username),
+		fmt.Sprintf("%s@localhost", e.MachineConfig.Username),
 		command,
 	)
 	cmd.Stdout = output
@@ -158,7 +184,7 @@ func (e *Engine) scpUpload(ctx context.Context, data []byte, to string) error {
 		"-i", "id_rsa",
 		"-P", strconv.Itoa(e.SshPort),
 		tempFile,
-		fmt.Sprintf("%s@localhost:%s", e.username, to),
+		fmt.Sprintf("%s@localhost:%s", e.MachineConfig.Username, to),
 	)
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
@@ -210,18 +236,11 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	}).Info("base image selected")
 
 	// Load configuration
-	e.username = "root"
-	usernameBytes, err := os.ReadFile(baseImage + ".username")
+	var err error
+	e.MachineConfig, err = loadMachineConfig(baseImage + ".json")
 	if err != nil {
-		if err.(*os.PathError) == nil {
-			return fmt.Errorf("error opening %s: %w", baseImage + ".username", err)
-		}
-	} else {
-		e.username = strings.TrimSpace(string(usernameBytes))
+		return fmt.Errorf("error loading machine config JSON: %w", err)
 	}
-	logrus.WithFields(logrus.Fields{
-		"username": e.username,
-	}).Info("username selected")
 
 	// Pick random port
 	e.SshPort = rand.Intn(65536 - 1025) + 1025
