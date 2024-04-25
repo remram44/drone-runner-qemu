@@ -1,6 +1,6 @@
 module github.com/remram44/drone-runner-qemu
 
-go 1.12
+go 1.22
 
 require (
 	github.com/buildkite/yaml v2.1.0+incompatible

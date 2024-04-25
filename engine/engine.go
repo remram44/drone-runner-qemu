@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"encoding/json"
+	"maps"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -312,6 +313,7 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		"duration": time.Since(start),
 	}).Info("machine has started")
 
+	// Upload files
 	err = e.uploadFiles(ctx, spec.Files)
 	if err != nil {
 		return err
@@ -341,18 +343,27 @@ func (e *Engine) Run(ctx context.Context, specv runtime.Spec, stepv runtime.Step
 	// spec := specv.(*Spec)
 	step := stepv.(*Step)
 
+	// Upload files
 	err := e.uploadFiles(ctx, step.Files)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: step.Secrets
+	// Add secrets to env
+	envs := step.Envs
+	if len(step.Secrets) > 0 {
+		envs = make(map[string]string)
+		maps.Copy(envs, step.Envs)
+		for _, secret := range step.Secrets {
+			envs[secret.Env] = string(secret.Data)
+		}
+	}
 
 	// Build full command
 	fullCommand := getStepCommand(
 		step.Command,
 		step.Args,
-		step.Envs,
+		envs,
 		step.WorkingDir,
 	)
 	logrus.WithFields(logrus.Fields{
