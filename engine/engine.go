@@ -164,6 +164,29 @@ func (e *Engine) scpUpload(ctx context.Context, data []byte, to string) error {
 	return cmd.Run()
 }
 
+func (e *Engine) uploadFiles(ctx context.Context, files []*File) error {
+	// Make directories for uploaded files
+	makeDirectoryCommand := getMakeDirectoriesCommand(files)
+	if err := e.ssh(ctx, makeDirectoryCommand); err != nil {
+		return fmt.Errorf("failed to create directories for uploaded files: %w", err)
+	}
+
+	// Upload files
+	for _, file := range files {
+		if file.IsDir {
+			continue
+		}
+
+		// Upload
+		err := e.scpUpload(ctx, file.Data, file.Path)
+		if err != nil {
+			return fmt.Errorf("sftp failed: %w", err)
+		}
+	}
+
+	return nil
+}
+
 // Setup the pipeline environment.
 func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	spec := specv.(*Spec)
@@ -270,7 +293,10 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		"duration": time.Since(start),
 	}).Info("machine has started")
 
-	// TODO: upload spec.Files
+	err = e.uploadFiles(ctx, spec.Files)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -296,23 +322,9 @@ func (e *Engine) Run(ctx context.Context, specv runtime.Spec, stepv runtime.Step
 	// spec := specv.(*Spec)
 	step := stepv.(*Step)
 
-	// Make directories for uploaded files
-	makeDirectoryCommand := getMakeDirectoriesCommand(step.Files)
-	if err := e.ssh(ctx, makeDirectoryCommand); err != nil {
-		return nil, fmt.Errorf("failed to create directories for uploaded files: %w", err)
-	}
-
-	// Upload files
-	for _, file := range step.Files {
-		if file.IsDir {
-			continue
-		}
-
-		// Upload
-		err := e.scpUpload(ctx, file.Data, file.Path)
-		if err != nil {
-			return nil, fmt.Errorf("sftp failed: %w", err)
-		}
+	err := e.uploadFiles(ctx, step.Files)
+	if err != nil {
+		return nil, err
 	}
 
 	// TODO: step.Secrets
@@ -329,7 +341,7 @@ func (e *Engine) Run(ctx context.Context, specv runtime.Spec, stepv runtime.Step
 	}).Debug("running command")
 
 	// SSH and run command
-	err := e.sshOutput(ctx, fullCommand, output)
+	err = e.sshOutput(ctx, fullCommand, output)
 
 	exitCode := 0
 	if err != nil {
