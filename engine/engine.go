@@ -55,6 +55,9 @@ func getStepCommand(command string, args []string, envs map[string]string, worki
 	envCommand = append(envCommand, commandWithArgs)
 
 	return (
+		"mkdir -p " +
+		shellescape.Quote(workingDir) +
+		" && " +
 		"cd " +
 		shellescape.Quote(workingDir) +
 		" && " +

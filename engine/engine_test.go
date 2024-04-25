@@ -30,7 +30,7 @@ func Test_stepCommand(t *testing.T) {
 		},
 		"/wd",
 	)
-	expected1 := "cd /wd && env /bin/sh -e /some/file.sh"
+	expected1 := "mkdir -p /wd && cd /wd && env /bin/sh -e /some/file.sh"
 	if result1 != expected1 {
 		t.Errorf("%#v != %#v", result1, expected1)
 	}
@@ -47,8 +47,8 @@ func Test_stepCommand(t *testing.T) {
 		},
 		"/working dir",
 	)
-	expected2a := "cd '/working dir' && env key=one 'key2=and two' '/bin/the shell' -e '/some/file name'"
-	expected2b := "cd '/working dir' && env 'key2=and two' key=one '/bin/the shell' -e '/some/file name'"
+	expected2a := "mkdir -p '/working dir' && cd '/working dir' && env key=one 'key2=and two' '/bin/the shell' -e '/some/file name'"
+	expected2b := "mkdir -p '/working dir' && cd '/working dir' && env 'key2=and two' key=one '/bin/the shell' -e '/some/file name'"
 	if result2 != expected2a && result2 != expected2b {
 		t.Errorf("%#v != %#v", result2, expected2a)
 	}
