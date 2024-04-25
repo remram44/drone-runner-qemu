@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VERSION=$(git describe | sed 's/^v//')
-IMAGE=ghcr.io/remram44/drone-runner-qemu
+IMAGE=ghcr.io/remram44/drone-runner-qemu:$VERSION
 
 docker buildx build --pull \
     . \
