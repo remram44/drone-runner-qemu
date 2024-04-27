@@ -18,14 +18,9 @@ type (
 	// execution.
 	Spec struct {
 		Root     string   `json:"root,omitempty"`
-		Settings Settings `json:"settings,omitempty"`
 		Files    []*File  `json:"files,omitempty"`
+		Image	 string `json:"image,omitempty"`
 		Steps    []*Step  `json:"steps,omitempty"`
-	}
-
-	// Settings provides pipeline settings.
-	Settings struct {
-		Image string `json:"image,omitempty"`
 	}
 
 	// Step defines a pipeline step.

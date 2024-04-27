@@ -59,9 +59,7 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 	}
 
 	spec := &engine.Spec{
-		Settings: engine.Settings{
-			Image: image,
-		},
+		Image: image,
 	}
 
 	// IMPORTANT:

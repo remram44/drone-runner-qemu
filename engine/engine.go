@@ -246,7 +246,7 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 
 	// Load configuration
 	var err error
-	e.MachineConfig, err = loadMachineConfig(e.ImageDir, spec.Settings.Image)
+	e.MachineConfig, err = loadMachineConfig(e.ImageDir, spec.Image)
 	if err != nil {
 		return fmt.Errorf("error loading machine config JSON: %w", err)
 	}
@@ -277,7 +277,7 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	logrus.Info("starting qemu")
 	cmd := exec.CommandContext(
 		ctx,
-		path.Join(e.ImageDir, spec.Settings.Image + ".qemu.sh"),
+		path.Join(e.ImageDir, spec.Image + ".qemu.sh"),
 	)
 	cmd.Env = append(cmd.Env, "QEMU_IMAGE=" + e.Image)
 	cmd.Env = append(cmd.Env, "QEMU_SSH_PORT=" + strconv.Itoa(e.SshPort))
