@@ -58,9 +58,7 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 		image = pipeline.Image
 	}
 
-	spec := &engine.Spec{
-		Image: image,
-	}
+	spec := &engine.Spec{}
 
 	// IMPORTANT:
 	// this pipeline starter project is optimized for pipelines
@@ -233,6 +231,7 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 					Data: []byte(buildfile),
 				},
 			},
+			Image:      src.Image,
 			Secrets:    convertSecretEnv(src.Environment),
 			WorkingDir: sourcedir,
 		}

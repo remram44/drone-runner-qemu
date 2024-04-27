@@ -19,7 +19,6 @@ type (
 	Spec struct {
 		Root     string   `json:"root,omitempty"`
 		Files    []*File  `json:"files,omitempty"`
-		Image	 string `json:"image,omitempty"`
 		Steps    []*Step  `json:"steps,omitempty"`
 	}
 
@@ -32,6 +31,7 @@ type (
 		ErrPolicy    runtime.ErrPolicy `json:"err_policy,omitempty"`
 		Envs         map[string]string `json:"environment,omitempty"`
 		Files        []*File           `json:"files,omitempty"`
+		Image        string			   `json:"image,omitempty"`
 		Name         string            `json:"name,omitempt"`
 		RunPolicy    runtime.RunPolicy `json:"run_policy,omitempty"`
 		Secrets      []*Secret         `json:"secrets,omitempty"`
