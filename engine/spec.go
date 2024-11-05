@@ -37,7 +37,7 @@ type (
 		ErrPolicy    runtime.ErrPolicy `json:"err_policy,omitempty"`
 		Envs         map[string]string `json:"environment,omitempty"`
 		Files        []*File           `json:"files,omitempty"`
-		Name         string            `json:"name,omitempt"`
+		Name         string            `json:"name,omitempty"`
 		RunPolicy    runtime.RunPolicy `json:"run_policy,omitempty"`
 		Secrets      []*Secret         `json:"secrets,omitempty"`
 		WorkingDir   string            `json:"working_dir,omitempty"`

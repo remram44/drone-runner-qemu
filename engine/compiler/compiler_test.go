@@ -136,7 +136,7 @@ func TestCompile_Secrets(t *testing.T) {
 	if diff := cmp.Diff(got, want); len(diff) != 0 {
 		// TODO(bradrydzewski) ordering is not guaranteed. this
 		// unit tests needs to be adjusted accordingly.
-		t.Skipf(diff)
+		t.Skip(diff)
 	}
 }
 
@@ -196,7 +196,7 @@ func testCompile(t *testing.T, source, golden string) *engine.Spec {
 		cmpopts.IgnoreFields(engine.Step{}, "Envs", "Secrets"),
 	}
 	if diff := cmp.Diff(got, want, opts...); len(diff) != 0 {
-		t.Errorf(diff)
+		t.Error(diff)
 	}
 
 	return got.(*engine.Spec)

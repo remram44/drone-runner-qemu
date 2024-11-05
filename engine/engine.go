@@ -307,7 +307,7 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 				if !running {
 					return
 				}
-			case _ = <- time.After(5 * time.Second):
+			case <- time.After(5 * time.Second):
 			}
 
 			err := e.ssh(ctx, "true")
